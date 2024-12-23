@@ -19,39 +19,44 @@
         rofi-unwrapped
         glib
         cairo
-        llvmPackages.libstdcxxClang
       ];
 
       nativeBuildInputs = with pkgs; [
-        nixpkgs-fmt
-
         autoreconfHook
         pkg-config
         gobject-introspection
         wrapGAppsHook3
-
-        llvmPackages.lldb
-        llvmPackages.clang
-        llvmPackages.llvm
-        clang-tools
-
-        (inputs.nix-code.vscode.${system} {
-          extensions = with inputs.nix-code.extensions.${system}; [
-            bbenoist.nix
-            jnoortheen.nix-ide
-            mkhl.direnv
-            llvm-vs-code-extensions.vscode-clangd
-          ];
-        })
       ];
     in
     {
       devShell.x86_64-linux = pkgs.mkShell {
         LD_LIBRARY_PATH = "${nixpkgs.lib.makeLibraryPath buildInputs}";
+        CPATH = nixpkgs.lib.makeSearchPathOutput "dev" "include" buildInputs;
 
-        nativeBuildInputs = nativeBuildInputs;
+        nativeBuildInputs = nativeBuildInputs ++ (with pkgs; [
+          nixpkgs-fmt
 
-        buildInputs = buildInputs;
+          llvmPackages.lldb
+          llvmPackages.clang
+          llvmPackages.llvm
+
+          (hiPrio clang-tools.override {
+            enableLibcxx = false;
+          })
+
+          (inputs.nix-code.vscode.${system} {
+            extensions = with inputs.nix-code.extensions.${system}; [
+              bbenoist.nix
+              jnoortheen.nix-ide
+              mkhl.direnv
+              llvm-vs-code-extensions.vscode-clangd
+            ];
+          })
+        ]);
+
+        buildInputs = buildInputs ++ (with pkgs; [
+          llvmPackages.libstdcxxClang
+        ]);
       };
 
       defaultPackage.x86_64-linux = pkgs.stdenv.mkDerivation

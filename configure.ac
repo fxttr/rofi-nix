@@ -1,4 +1,4 @@
-AC_INIT([rofi-plugin-template], [0.0.1], [https://my-neat-plugin.org//],[],[https://support.my-neat-plugin.org/])
+AC_INIT([nix], [0.0.1], [https://github.com/fxttr/rofi-nix],[],[https://github.com/fxttr/rofi-nix/issues])
 
 AC_CONFIG_HEADER([config.h])
 
@@ -9,12 +9,7 @@ dnl Setup automake to be silent and in foreign mode.
 dnl We want xz distribution
 dnl ---------------------------------------------------------------------
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects dist-xz])
-AM_SILENT_RULES([yes])
-
-dnl ---------------------------------------------------------------------
-dnl  Check for compiler
-dnl ---------------------------------------------------------------------
-AC_PROG_CC([clang gcc cc])
+AM_SILENT_RULES([no])
 
 dnl ---------------------------------------------------------------------
 dnl  C99 standard
@@ -39,7 +34,7 @@ AM_PROG_AR
 dnl ---------------------------------------------------------------------
 dnl Base CFLAGS
 dnl ---------------------------------------------------------------------
-AM_CFLAGS="-Wall -Wextra -Wparentheses -Winline -pedantic  -Wunreachable-code"
+AM_CFLAGS="-Wall -Wextra -Wparentheses -Winline -pedantic -Wunreachable-code"
 
 
 dnl ---------------------------------------------------------------------
@@ -49,10 +44,14 @@ PKG_PROG_PKG_CONFIG
 
 
 dnl ---------------------------------------------------------------------
-dnl PKG_CONFIG based dependencies  
+dnl PKG_CONFIG based dependencies
 dnl ---------------------------------------------------------------------
 PKG_CHECK_MODULES([glib],     [glib-2.0 >= 2.40 gio-unix-2.0 gmodule-2.0 ])
-PKG_CHECK_MODULES([rofi],     [rofi])
+PKG_CHECK_MODULES([cairo],    [cairo])
+PKG_CHECK_MODULES([rofi],     [rofi >= 1.5.4])
+
+[rofi_PLUGIN_INSTALL_DIR]="`echo $out/lib/rofi`"
+AC_SUBST([rofi_PLUGIN_INSTALL_DIR])
 
 LT_INIT([disable-static])
 
@@ -61,5 +60,5 @@ dnl Add extra compiler flags
 dnl ---------------------------------------------------------------------
 AC_SUBST([AM_CFLAGS])
 
-AC_CONFIG_FILES([Makefile ])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
