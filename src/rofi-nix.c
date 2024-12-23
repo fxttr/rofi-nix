@@ -63,23 +63,23 @@ static int rofinix_mode_init ( Mode *sw )
      * Called on startup when enabled (in modi list)
      */
     if ( mode_get_private_data ( sw ) == NULL ) {
-        rofi-nixModePrivateData *pd = g_malloc0 ( sizeof ( *pd ) );
+        rofinixModePrivateData *pd = g_malloc0 ( sizeof ( *pd ) );
         mode_set_private_data ( sw, (void *) pd );
         // Load content.
-        get_rofi-nix ( sw );
+        get_rofinix ( sw );
     }
     return TRUE;
 }
 static unsigned int rofinix_mode_get_num_entries ( const Mode *sw )
 {
-    const rofi-nixModePrivateData *pd = (const rofi-nixModePrivateData *) mode_get_private_data ( sw );
+    const rofinixModePrivateData *pd = (const rofinixModePrivateData *) mode_get_private_data ( sw );
     return pd->array_length;
 }
 
 static ModeMode rofinix_mode_result ( Mode *sw, int mretv, char **input, unsigned int selected_line )
 {
     ModeMode           retv  = MODE_EXIT;
-    rofi-nixModePrivateData *pd = (rofi-nixModePrivateData *) mode_get_private_data ( sw );
+    rofinixModePrivateData *pd = (rofinixModePrivateData *) mode_get_private_data ( sw );
     if ( mretv & MENU_NEXT ) {
         retv = NEXT_DIALOG;
     } else if ( mretv & MENU_PREVIOUS ) {
@@ -96,7 +96,7 @@ static ModeMode rofinix_mode_result ( Mode *sw, int mretv, char **input, unsigne
 
 static void rofinix_mode_destroy ( Mode *sw )
 {
-    rofi-nixModePrivateData *pd = (rofi-nixModePrivateData *) mode_get_private_data ( sw );
+    rofinixModePrivateData *pd = (rofinixModePrivateData *) mode_get_private_data ( sw );
     if ( pd != NULL ) {
         g_free ( pd );
         mode_set_private_data ( sw, NULL );
@@ -105,7 +105,7 @@ static void rofinix_mode_destroy ( Mode *sw )
 
 static char *_get_display_value ( const Mode *sw, unsigned int selected_line, G_GNUC_UNUSED int *state, G_GNUC_UNUSED GList **attr_list, int get_entry )
 {
-    rofi-nixModePrivateData *pd = (rofi-nixModePrivateData *) mode_get_private_data ( sw );
+    rofinixModePrivateData *pd = (rofinixModePrivateData *) mode_get_private_data ( sw );
 
     // Only return the string if requested, otherwise only set state.
     return get_entry ? g_strdup("n/a"): NULL; 
@@ -120,9 +120,9 @@ static char *_get_display_value ( const Mode *sw, unsigned int selected_line, G_
  *
  * @param returns try when a match.
  */
-static int rofi-nix_token_match ( const Mode *sw, rofi_int_matcher **tokens, unsigned int index )
+static int rofinix_token_match ( const Mode *sw, rofi_int_matcher **tokens, unsigned int index )
 {
-    rofi-nixModePrivateData *pd = (rofi-nixModePrivateData *) mode_get_private_data ( sw );
+    rofinixModePrivateData *pd = (rofinixModePrivateData *) mode_get_private_data ( sw );
 
     // Call default matching function.
     return helper_token_match ( tokens, pd->array[index]);
