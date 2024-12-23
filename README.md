@@ -23,3 +23,12 @@ Run rofi like:
 ```bash
 $ nix build .#
 ```
+
+### Development
+
+This flake provides a pre-configured vscode. Just run
+
+```bash
+$ nix develop .
+$ code .
+```
