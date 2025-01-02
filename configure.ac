@@ -49,6 +49,7 @@ dnl ---------------------------------------------------------------------
 PKG_CHECK_MODULES([glib],     [glib-2.0 >= 2.40 gio-unix-2.0 gmodule-2.0 ])
 PKG_CHECK_MODULES([cairo],    [cairo])
 PKG_CHECK_MODULES([rofi],     [rofi >= 1.5.4])
+PKG_CHECK_MODULES([nix_expr_c], [nix-expr-c >= 2.24.11])
 
 [rofi_PLUGIN_INSTALL_DIR]="`echo $out/lib/rofi`"
 AC_SUBST([rofi_PLUGIN_INSTALL_DIR])

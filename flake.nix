@@ -5,20 +5,26 @@
     nixpkgs.url = "github:NixOS/nixpkgs";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
 
-    nix-code = {
-      url = "github:fxttr/nix-code";
-      inputs.extensions.follows = "nix-vscode-extensions";
+    code-nix = {
+      url = "github:fxttr/code-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        extensions.follows = "nix-vscode-extensions";
+      };
     };
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
     let
-      pkgs = import nixpkgs { system = "x86_64-linux"; };
+      pkgs = import nixpkgs { 
+        system = "x86_64-linux";
+      };
 
       buildInputs = with pkgs; [
         rofi-unwrapped
         glib
         cairo
+        nix.dev
       ];
 
       nativeBuildInputs = with pkgs; [
@@ -26,31 +32,33 @@
         pkg-config
         gobject-introspection
         wrapGAppsHook3
+        python3
       ];
+
+      code = inputs.code-nix.packages.${pkgs.system}.default;
     in
     {
       devShell.x86_64-linux = pkgs.mkShell {
+        PATH = "${pkgs.clang-tools}/bin:$PATH";
         LD_LIBRARY_PATH = "${nixpkgs.lib.makeLibraryPath buildInputs}";
         CPATH = nixpkgs.lib.makeSearchPathOutput "dev" "include" buildInputs;
 
         nativeBuildInputs = nativeBuildInputs ++ (with pkgs; [
           nixpkgs-fmt
 
-          llvmPackages.lldb
-          llvmPackages.clang
-          llvmPackages.llvm
-
           (hiPrio clang-tools.override {
             enableLibcxx = false;
           })
 
-          (inputs.nix-code.vscode.${system} {
-            extensions = with inputs.nix-code.extensions.${system}; [
-              bbenoist.nix
-              jnoortheen.nix-ide
-              mkhl.direnv
-              llvm-vs-code-extensions.vscode-clangd
-            ];
+          llvmPackages.lldb
+          llvmPackages.clang
+          llvmPackages.llvm
+
+          (code {
+            profiles = {
+              nix.enable = true;
+              c.enable = true;
+            };
           })
         ]);
 

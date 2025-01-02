@@ -36,6 +36,8 @@
 
 #include <stdint.h>
 
+#include "nix.h"
+
 G_MODULE_EXPORT Mode mode;
 
 /**
@@ -50,6 +52,19 @@ typedef struct
 
 static void get_rofinix (  Mode *sw )
 {
+    rofinixModePrivateData *pd = g_malloc0 ( sizeof ( *pd ) );
+
+    nixpkgs_t* nixpkgs = get_nixpkgs();
+
+    pd->array = malloc(nixpkgs->num_of_pkgs * sizeof(char *));
+    pd->array_length = nixpkgs->num_of_pkgs;
+    
+    for (int i = 0; i < nixpkgs->num_of_pkgs; i++) {
+        pd->array[i] = malloc(strlen(nixpkgs->pkgs[i]) + 1);
+        strcpy(pd->array[i], nixpkgs->pkgs[i]);
+    }
+
+    mode_set_private_data ( sw, (void *) pd );
     /** 
      * Get the entries to display.
      * this gets called on plugin initialization.
